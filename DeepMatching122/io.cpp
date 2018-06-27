@@ -27,22 +27,13 @@ void dm_output_correspondences(const char *out_filename, const dm_corres_t *corr
     assert(0 < fx && fx <= 2);
     assert(0 < fy && fy <= 2);
     FILE *f = out_filename ? fopen(out_filename, "w") : NULL;
-    std::ofstream match("./match_wang.txt");
-    if (!match.is_open()) {
-        std::cerr << "打开match.txt失败" << std::endl;
-    }
     for (int i = 0; i < nb; i++) {
         const dm_corres_t *r = corres + i; // one row
-        match << " " << fx * r->x0
-              << " " << fy * r->y0
-              << " " << fx * r->x1
-              << " " << fy * r->y1 << std::endl;
         if (f)
             fprintf(f, "%g %g %g %g %g %g\n", fx * r->x0, fy * r->y0, fx * r->x1, fy * r->y1, r->maxima, r->score);
         else
             std_printf("%g %g %g %g %g %g\n", fx * r->x0, fy * r->y0, fx * r->x1, fy * r->y1, r->maxima, r->score);
     }
-    match.close();
     if (out_filename)
         fclose(f);
 }
