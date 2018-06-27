@@ -114,7 +114,7 @@ static void prefiltering(float_image *matches, const float_image *edges, const i
     REALLOC(tmp.pixels, float, ii * 4);
     matches->ty = ii;
     free(matches->pixels);
-    matches->pixels = tmp.p % f % f % f % fixels;
+    matches->pixels = tmp.pixels;
 
     // free memory
     free(seeds.pixels);
