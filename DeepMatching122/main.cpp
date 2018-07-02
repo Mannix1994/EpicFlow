@@ -300,6 +300,49 @@ int main_deep_matching(int argc, const char **argv) {
 }
 
 
+float_image main_deep_matching(int argc, const char **argv,image_t_dm *im1,image_t_dm *im2) {
+
+    if (argc <= 2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) dm_usage(EXE_OPTIONS);
+
+    int current_arg = 3;
+
+    // set params to default
+    dm_params_t params;
+    dm_set_default_dm_params(&params);
+    dm_scalerot_params_t sr_params;
+    dm_set_default_scalerot_params(&sr_params);
+    bool use_scalerot = false;
+    float fx = 1, fy = 1;
+
+    // parse options
+    const char *out_filename = dm_parse_options(&params, &sr_params, &use_scalerot, &fx, &fy, argc - current_arg,
+                                                &argv[current_arg], EXE_OPTIONS, &im1, &im2);
+
+    // compute deep matching
+    float_image *corres = use_scalerot ?
+                          dm_deep_matching_scale_rot(im1, im2, &params, &sr_params) :
+                          dm_deep_matching(im1, im2, &params, NULL);  // standard call
+    // save result to res
+    float_image res = empty_image(float, 4, 100000);
+    assert(0 < fx && fx <= 2);
+    assert(0 < fy && fy <= 2);
+    int i;
+    for (i = 0; i < corres->ty; i++) {
+        const dm_corres_t *r = (dm_corres_t *)corres + i; // one row
+        res.pixels[4*i  ] = fx * r->x0;
+        res.pixels[4*i+1] = fy * r->y0;
+        res.pixels[4*i+2] = fx * r->x1;
+        res.pixels[4*i+3] = fy * r->y1;
+    }
+    res.pixels = (float*) realloc(res.pixels, sizeof(float)*4*i);
+    res.ty = i;
+
+    free_image(corres);
+    dm_image_delete(im1);
+    dm_image_delete(im2);
+
+    return res;
+}
 
 
 

@@ -30,5 +30,6 @@ const char* dm_parse_options(dm_params_t *params, dm_scalerot_params_t *sr_param
                              image_t_dm **im2);
 
 int main_deep_matching(int argc, const char ** argv);
+float_image main_deep_matching(int argc, const char **argv,image_t_dm *im1,image_t_dm *im2);
 
 #endif

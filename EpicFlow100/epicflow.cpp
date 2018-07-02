@@ -137,3 +137,106 @@ int main_epic_flow(int argc, char **argv){
 
     return 0;
 }
+
+
+int main_epic_flow(int argc, char **argv,
+                   ef_color_image_t *im1,
+                   ef_color_image_t *im2,
+                   float_image edges,
+                   float_image matches){
+    if( argc<6){
+        if(argc>1) fprintf(stderr,"Error, not enough arguments\n");
+        usage();
+        exit(1);
+    }
+
+    // read arguments
+    const char *outputfile = argv[5];
+
+    // prepare variables
+    epic_params_t epic_params;
+    epic_params_default(&epic_params);
+    ef_variational_params_t flow_params;
+    ef_variational_params_default(&flow_params);
+    ef_image_t *wx = ef_image_new(im1->width, im1->height), *wy = ef_image_new(im1->width, im1->height);
+
+    // read optional arguments
+#define isarg(key)  !strcmp(a,key)
+    int current_arg = 6;
+    while(current_arg < argc ){
+        const char* a = argv[current_arg++];
+        if( isarg("-h") || isarg("-help") )
+            usage();
+        else if( isarg("-nw") )
+            strcpy(epic_params.method, "NW");
+        else if( isarg("-p") || isarg("-prefnn") )
+            epic_params.pref_nn = atoi(argv[current_arg++]);
+        else if( isarg("-n") || isarg("-nn") )
+            epic_params.nn = atoi(argv[current_arg++]);
+        else if( isarg("-k") )
+            epic_params.coef_kernel = atof(argv[current_arg++]);
+        else if( isarg("-i") || isarg("-iter") )
+            flow_params.niter_outer = atoi(argv[current_arg++]);
+        else if( isarg("-a") || isarg("-alpha") )
+            flow_params.alpha= atof(argv[current_arg++]);
+        else if( isarg("-g") || isarg("-gamma") )
+            flow_params.gamma= atof(argv[current_arg++]);
+        else if( isarg("-d") || isarg("-delta") )
+            flow_params.delta= atof(argv[current_arg++]);
+        else if( isarg("-s") || isarg("-sigma") )
+            flow_params.sigma= atof(argv[current_arg++]);
+        else if( isarg("-sintel") ){
+            epic_params.pref_nn= 25;
+            epic_params.nn= 160;
+            epic_params.coef_kernel = 1.1f;
+            flow_params.niter_outer = 5;
+            flow_params.alpha = 1.0f;
+            flow_params.gamma = 0.72f;
+            flow_params.delta = 0.0f;
+            flow_params.sigma = 1.1f;
+        }
+        else if( isarg("-kitti") ){
+            epic_params.pref_nn= 25;
+            epic_params.nn= 160;
+            epic_params.coef_kernel = 1.1f;
+            flow_params.niter_outer = 2;
+            flow_params.alpha = 1.0f;
+            flow_params.gamma = 0.77f;
+            flow_params.delta = 0.0f;
+            flow_params.sigma = 1.7f;
+        }
+        else if( isarg("-middlebury") ){
+            epic_params.pref_nn= 15;
+            epic_params.nn= 65;
+            epic_params.coef_kernel = 0.2f;
+            flow_params.niter_outer = 25;
+            flow_params.alpha = 1.0f;
+            flow_params.gamma = 0.72f;
+            flow_params.delta = 0.0f;
+            flow_params.sigma = 1.1f;
+        }
+        else{
+            fprintf(stderr, "unknown argument %s", a);
+            usage();
+            exit(1);
+        }
+    }
+
+    // compute interpolation and energy minimization
+    ef_color_image_t *imlab = ef_rgb_to_lab(im1);
+    epic(wx, wy, imlab, &matches, &edges, &epic_params, 1);
+    // energy minimization
+    ef_variational(wx, wy, im1, im2, &flow_params);
+    // write output file and free memory
+    ef_writeFlowFile(outputfile, wx, wy);
+
+    ef_color_image_delete(im1);
+    ef_color_image_delete(imlab);
+    ef_color_image_delete(im2);
+    free(matches.pixels);
+    free(edges.pixels);
+    ef_image_delete(wx);
+    ef_image_delete(wy);
+
+    return 0;
+}
