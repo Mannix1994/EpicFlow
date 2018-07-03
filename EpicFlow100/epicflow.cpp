@@ -6,6 +6,7 @@
 #include "variational.h"
 #include "../debug.h"
 #include "epicflow.h"
+#include "array_types.h"
 
 
 /* show usage information */
@@ -246,7 +247,9 @@ cv::Mat main_epic_flow(int argc, char **argv,
     ef_color_image_delete(imlab);
     ef_color_image_delete(im2);
     free(matches.pixels);
+    matches.pixels = nullptr;
     free(edges.pixels);
+    edges.pixels = nullptr;
     ef_image_delete(wx);
     ef_image_delete(wy);
 

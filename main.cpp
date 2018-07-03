@@ -73,40 +73,49 @@ void get_flow(const char *pre_name,const char *next_name){
     main_epic_flow(argc_for_ef, (char**)argv_for_ef);
 }
 
-Mat get_flow_new(const char *pre_name,const char *next_name){
-
-    //SED
-    string modelFilename = "model.yml.gz";
-    string outFilename = "edges.bin";
-    Mat pre = imread(pre_name);
-    Mat next = imread(next_name);
-    if(pre.empty()){
-        cerr<<__LINE__<<": pre is empty"<<endl;
-        return Mat();
-    }
+Mat get_flow(const Mat &pre, const Mat &next){
+    // get edges
+    const string modelFilename = "model.yml.gz";
     float_image edges = sed(pre, modelFilename);
 
     // DEEP_MATCHING
     const int argc = 7;
-    const char *argv[argc] = {"null",pre_name,next_name,"-nt","0","-out","match.txt"};
-    image_t_dm *pre_dm = Mat2Image(pre);
-    image_t_dm *next_dm = Mat2Image(next);
-    //
-    float_image matches = main_deep_matching(argc,argv,pre_dm,next_dm);
+    // 下面这排参数几乎没用，只是为了保证在最少更改原程序的条件下保证程序正常运行
+    const char *argv[argc] = {"null","pre_name","next_name","-nt","0","-out","match.txt"};
+    image_t_dm *pre_gray = Mat2Image(pre);
+    image_t_dm *next_gray = Mat2Image(next);
+    // 得到matches
+    float_image matches = main_deep_matching(argc,argv,pre_gray,next_gray);
 
-    // 调用epicflow
+    // 调用epicflow，计算光流
     const int argc_for_ef = 6;
-    const char *argv_for_ef[argc_for_ef] = {"null", pre_name, next_name,outFilename.c_str(),
+    const char *argv_for_ef[argc_for_ef] = {"null", "pre_name", "next_name","edges.bin",
                                             "match.txt","new.flo"};
     ef_color_image_t *pre_ef = Mat2ColorImage(pre);
     ef_color_image_t *next_ef = Mat2ColorImage(next);
     return main_epic_flow(argc_for_ef, (char**)argv_for_ef,pre_ef,next_ef,edges,matches);
 }
 
+Mat get_flow_new(const char *pre_name,const char *next_name){
+
+    Mat pre = imread(pre_name);
+    Mat next = imread(next_name);
+    if(pre.empty()){
+        cerr<<__LINE__<<": pre is empty"<<endl;
+        return Mat();
+    }if(next.empty()){
+        cerr<<__LINE__<<": next is empty"<<endl;
+        return Mat();
+    }
+    return get_flow(pre,next);
+}
+
 int main(){
     const char *pre_name = "./image69.jpg";
     const char *next_name = "./image74.jpg";
-    get_flow(pre_name,next_name);
-    get_flow_new(pre_name,next_name);
+//    get_flow(pre_name,next_name);
+    for(int i=0;i<50;i++)
+        Mat flow = get_flow_new(pre_name,next_name);
+//    save_flow_to_csv("mat_flo.csv",flow);
     return 0;
 }

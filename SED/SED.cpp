@@ -17,8 +17,7 @@ float_image sed(const Mat &image, const std::string &modelFilename){
 
     Mat edges(image.size(), image.type());
 
-    Ptr<StructuredEdgeDetection> pDollar =
-            createStructuredEdgeDetection(modelFilename);
+    Ptr<StructuredEdgeDetection> pDollar = createStructuredEdgeDetection(modelFilename);
 
     pDollar->detectEdges(img, edges);
 
