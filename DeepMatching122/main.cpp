@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "io.h"
 #include "deep_matching.h"
 #include "main.h"
+#include "array_types.h"
 #include <thread>
 
 void dm_usage(const int language) {
@@ -328,7 +329,7 @@ float_image main_deep_matching(int argc, const char **argv,image_t_dm *im1,image
     assert(0 < fy && fy <= 2);
     int i;
     for (i = 0; i < corres->ty; i++) {
-        const dm_corres_t *r = (dm_corres_t *)corres + i; // one row
+        const dm_corres_t *r = (dm_corres_t*)(corres->pixels+ sizeof(dm_corres_t)/ sizeof(float)*i);
         res.pixels[4*i  ] = fx * r->x0;
         res.pixels[4*i+1] = fy * r->y0;
         res.pixels[4*i+2] = fx * r->x1;

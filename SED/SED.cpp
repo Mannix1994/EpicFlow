@@ -4,6 +4,7 @@
 
 #include <opencv2/ximgproc.hpp>
 #include "SED.h"
+#include "../EpicFlow100/array_types.h"
 
 
 using namespace std;
@@ -23,12 +24,11 @@ float_image sed(const Mat &image, const std::string &modelFilename){
 
     float_image f_image= empty_image(float, edges.cols, edges.rows);
 
-    for (int i = 0; i < edges.rows; i++){
-        for (int j = 0; j < edges.cols; j++){
-            int index = j + i * edges.cols;
-            f_image.pixels[index] = edges.at<float>(i,j);
-        }
-    }
+    float p[edges.cols][edges.rows];   //存转置
+    for (int i = 0; i < edges.rows; i++)
+        for (int j = 0; j < edges.cols; j++)
+            p[j][i] = edges.at<float>(i, j);
+    memcpy(f_image.pixels,(char *)p,edges.cols * edges.rows * sizeof(float));
     return f_image;
 }
 

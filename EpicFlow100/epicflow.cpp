@@ -4,6 +4,8 @@
 #include "image.h"
 #include "io.h"
 #include "variational.h"
+#include "../debug.h"
+#include "epicflow.h"
 
 
 /* show usage information */
@@ -126,6 +128,7 @@ int main_epic_flow(int argc, char **argv){
     ef_variational(wx, wy, im1, im2, &flow_params);
     // write output file and free memory
     ef_writeFlowFile(outputfile, wx, wy);
+//    save_flow_to_csv("old_flo.csv",wx,wy);
 
     ef_color_image_delete(im1);
     ef_color_image_delete(imlab);
@@ -139,11 +142,11 @@ int main_epic_flow(int argc, char **argv){
 }
 
 
-int main_epic_flow(int argc, char **argv,
-                   ef_color_image_t *im1,
-                   ef_color_image_t *im2,
-                   float_image edges,
-                   float_image matches){
+cv::Mat main_epic_flow(int argc, char **argv,
+                       ef_color_image_t *im1,
+                       ef_color_image_t *im2,
+                       float_image edges,
+                       float_image matches){
     if( argc<6){
         if(argc>1) fprintf(stderr,"Error, not enough arguments\n");
         usage();
@@ -227,8 +230,17 @@ int main_epic_flow(int argc, char **argv,
     epic(wx, wy, imlab, &matches, &edges, &epic_params, 1);
     // energy minimization
     ef_variational(wx, wy, im1, im2, &flow_params);
+    // 把光流保存到Mat并返回
+    cv::Mat flo(wx->height,wx->width,CV_32FC2);
+    for(int i=0;i<flo.rows;i++){
+        for(int j=0;j<flo.cols;j++){
+            flo.at<cv::Vec2f>(i,j)=cv::Vec2f(wx->data[i * wx->stride + j],
+                                             wy->data[i * wy->stride + j]);
+        }
+    }
     // write output file and free memory
-    ef_writeFlowFile(outputfile, wx, wy);
+//    ef_writeFlowFile(outputfile, wx, wy);
+//    save_flow_to_csv("new_flo.csv",wx,wy);
 
     ef_color_image_delete(im1);
     ef_color_image_delete(imlab);
@@ -238,5 +250,5 @@ int main_epic_flow(int argc, char **argv,
     ef_image_delete(wx);
     ef_image_delete(wy);
 
-    return 0;
+    return flo;
 }

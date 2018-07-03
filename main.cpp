@@ -6,6 +6,8 @@
 #include "EpicFlow100/epicflow.h"
 #include "SED/SED.h"
 #include "EpicFlow100/image.h"
+#include "DeepMatching122/array_types.h"
+#include "debug.h"
 
 #include <opencv2/opencv.hpp>
 using namespace std;
@@ -71,7 +73,7 @@ void get_flow(const char *pre_name,const char *next_name){
     main_epic_flow(argc_for_ef, (char**)argv_for_ef);
 }
 
-void get_flow_new(const char *pre_name,const char *next_name){
+Mat get_flow_new(const char *pre_name,const char *next_name){
 
     //SED
     string modelFilename = "model.yml.gz";
@@ -80,7 +82,7 @@ void get_flow_new(const char *pre_name,const char *next_name){
     Mat next = imread(next_name);
     if(pre.empty()){
         cerr<<__LINE__<<": pre is empty"<<endl;
-        return;
+        return Mat();
     }
     float_image edges = sed(pre, modelFilename);
 
@@ -95,15 +97,16 @@ void get_flow_new(const char *pre_name,const char *next_name){
     // 调用epicflow
     const int argc_for_ef = 6;
     const char *argv_for_ef[argc_for_ef] = {"null", pre_name, next_name,outFilename.c_str(),
-                                            "match.txt","out.flo"};
+                                            "match.txt","new.flo"};
     ef_color_image_t *pre_ef = Mat2ColorImage(pre);
     ef_color_image_t *next_ef = Mat2ColorImage(next);
-    main_epic_flow(argc_for_ef, (char**)argv_for_ef,pre_ef,next_ef,edges,matches);
+    return main_epic_flow(argc_for_ef, (char**)argv_for_ef,pre_ef,next_ef,edges,matches);
 }
 
 int main(){
     const char *pre_name = "./image69.jpg";
     const char *next_name = "./image74.jpg";
+//    get_flow(pre_name,next_name);
     get_flow_new(pre_name,next_name);
     return 0;
 }
