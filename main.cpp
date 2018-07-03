@@ -106,7 +106,7 @@ Mat get_flow_new(const char *pre_name,const char *next_name){
 int main(){
     const char *pre_name = "./image69.jpg";
     const char *next_name = "./image74.jpg";
-//    get_flow(pre_name,next_name);
+    get_flow(pre_name,next_name);
     get_flow_new(pre_name,next_name);
     return 0;
 }
