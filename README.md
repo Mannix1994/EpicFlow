@@ -1,4 +1,4 @@
-### EpicFlow
+# EpicFlow
 
 This is a library which is used to compute optic flow.it is 
 based on [EpicFlow](http://lear.inrialpes.fr/src/epicflow/)
