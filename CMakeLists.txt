@@ -16,7 +16,7 @@ find_package(OpenCV REQUIRED)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../run)	#这一句指定可执行文件的位置
 
-include_directories(${OPENCV_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${CERES_INCLUDE_DIRS})
 
 file(GLOB CURRENT_HEADERS  *.h DeepMatching122/*.h EpicFlow100/*.h SED/*.h)
