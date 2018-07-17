@@ -11,7 +11,7 @@ find_package(Ceres REQUIRED)
 #指定opencv的路径, if you dont know what it is mean, google
 #set(OpenCV_DIR "/usr/local/opencv2413/share/OpenCV")
 #set(OpenCV_DIR "/usr/local/opencv341/share/OpenCV")
-set(OpenCV_DIR "/usr/local/opencv320/share/OpenCV")
+set(OpenCV_DIR "/usr/local/opencv320/share/OpenCV") # 指定opencv路径
 find_package(OpenCV REQUIRED)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../run)	#这一句指定可执行文件的位置

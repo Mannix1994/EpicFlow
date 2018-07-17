@@ -19,10 +19,10 @@ void func(){
     Mat next = ...;
     if(pre.empty()){
         cerr<<__LINE__<<": pre is empty";
-        return Mat();
+        return;
     }if(next.empty()){
         cerr<<__LINE__<<": next is empty";
-        return Mat();
+        return;
     }
     assert(pre.type() == CV_8UC3 && pre.type() == next.type() && !"Not a color image");
     Mat optic_flow =  get_flow(pre,next);
