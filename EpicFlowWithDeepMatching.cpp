@@ -60,6 +60,7 @@ ef_color_image_t *Mat2ColorImage(const Mat &img){
  * @param pre_name the pre image file path(support .jpg .png image file)
  * @param next_name the next image file path
  */
+/**
 void get_flow(const char *pre_name,const char *next_name){
 
     //SED
@@ -84,6 +85,7 @@ void get_flow(const char *pre_name,const char *next_name){
                                             "match.txt","out.flo"};
     main_epic_flow(argc_for_ef, (char**)argv_for_ef);
 }
+ */
 
 /**
  * 新版本，不通过文件传参的光流函数
