@@ -17,16 +17,24 @@ using namespace std;
  * @param image 三通道Mat
  * @return image_t_dm
  */
-image_t_dm *Mat2Image(const Mat &image){
-    if (image.type() != CV_8UC3){
-        throw runtime_error("Not a CV_8UC3 mat");
-    }
+image_t_dm *mat2Gray(const Mat &image){
     image_t_dm *img = dm_image_new(image.cols,image.rows);
-    for(int j=0; j<img->height; j++) {
-        for (int i = 0; i < img->width; i++) {
-            Vec3b pixel = image.at<Vec3b>(j,i);
-            img->data[i+j*img->stride] = (pixel[0]+pixel[1]+pixel[2])/3;
+    if(image.type() == CV_8UC3) {
+        for (int j = 0; j < img->height; j++) {
+            for (int i = 0; i < img->width; i++) {
+                Vec3b pixel = image.at<Vec3b>(j, i);
+                img->data[i + j * img->stride] = (pixel[0] + pixel[1] + pixel[2]) / 3.0f;
+            }
         }
+    } else if(image.type()==CV_8UC1){
+        for (int j = 0; j < img->height; j++) {
+            for (int i = 0; i < img->width; i++) {
+                uchar pixel = image.at<uchar>(j, i);
+                img->data[i + j * img->stride] = pixel;
+            }
+        }
+    } else{
+        throw runtime_error("Not a CV_8UC3 or CV_8UC1 mat");
     }
     return img;
 }
@@ -94,8 +102,8 @@ Mat get_flow(const Mat &pre, const Mat &next){
     const int argc = 7;
     // 下面这排参数几乎没用，只是为了保证在最少更改原程序的条件下保证程序正常运行
     const char *argv[argc] = {"null","pre_name","next_name","-nt","0","-out","match.txt"};
-    image_t_dm *pre_gray = Mat2Image(pre);
-    image_t_dm *next_gray = Mat2Image(next);
+    image_t_dm *pre_gray = mat2Gray(pre);
+    image_t_dm *next_gray = mat2Gray(next);
     // 得到matches
     float_image matches = main_deep_matching(argc,argv,pre_gray,next_gray);
 
@@ -127,6 +135,6 @@ Mat get_flow_new(const char *pre_name,const char *next_name){
         cerr<<__LINE__<<": next is empty"<<endl;
         return Mat();
     }
-    assert(pre.type() == CV_8UC3 && pre.type() == next.type() && !"Not a color image");
+    CV_Assert(pre.type() == next.type());
     return get_flow(pre,next);
 }
