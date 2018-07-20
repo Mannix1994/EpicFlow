@@ -13,8 +13,8 @@ using namespace cv;
 using namespace std;
 
 /**
- * 三通道Mat转image_t_dm
- * @param image 三通道Mat
+ * 三通道或者单通道Mat转image_t_dm
+ * @param image 三通道或者单通道Mat
  * @return image_t_dm
  */
 image_t_dm *mat2Gray(const Mat &image){
