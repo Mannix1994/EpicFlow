@@ -19,13 +19,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../run)	#这一句指定可执行文件的位
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${CERES_INCLUDE_DIRS})
 
-file(GLOB CURRENT_HEADERS  *.h DeepMatching122/*.h EpicFlow100/*.h SED/*.h)
-file(GLOB CURRENT_SOURCES  *.cpp DeepMatching122/*.cpp EpicFlow100/*.c EpicFlow100/*.cpp SED/*.cpp)
+file(GLOB CURRENT_HEADERS  *.h)
+file(GLOB CURRENT_SOURCES  *.cpp)
 
+add_subdirectory(EpicFlow)
+include_directories(EpicFlow)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/EpicFlow)
 
 add_executable(${PROJECT_NAME} ${CURRENT_HEADERS} ${CURRENT_SOURCES})
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} epicflow
         ${OpenCV_LIBS}
         ${CERES_LIBRARIES}
         pthread

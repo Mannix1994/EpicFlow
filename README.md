@@ -8,8 +8,18 @@ based on [EpicFlow](http://lear.inrialpes.fr/src/epicflow/)
 Note that this is a cmake project based on OpenCV, so you should
 install OpenCV.
 * Download this Project
-* Copy everything to your project except main.cpp
-* Edit your CMakeLists.txt  
+* Copy EpicFlow to your project
+* Edit your CMakeLists.txt
+```cmake
+# add thres lines
+add_subdirectory(EpicFlow)
+include_directories(EpicFlow)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/EpicFlow)
+
+add_executable(${PROJECT_NAME} ....)
+# add library
+target_link_libraries(${PROJECT_NAME} epicflow)
+```  
 * Here is a demo:
 ```cplusplus
 #include "EpicFlowWithDeepMatching.h"
