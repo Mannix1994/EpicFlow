@@ -10,8 +10,8 @@ install OpenCV.
 * Download this Project
 * Copy EpicFlow to your project
 * Edit your CMakeLists.txt
-```cmake
-# add thres lines
+```
+# add three lines to your CMakeLists.txt
 add_subdirectory(EpicFlow)
 include_directories(EpicFlow)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/EpicFlow)
